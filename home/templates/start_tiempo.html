@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nuevo Temporizador</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700&display=swap" rel="stylesheet">
+  <style>
+    /* El CSS se mantiene igual para los estilos (omitido por brevedad en la respuesta, pero asumo que lo pegaste completo) */
+    :root {
+      --primary: #00d2ff;
+      --secondary: #3a7bd5;
+      --glass-bg: rgba(255, 255, 255, 0.05);
+      --glass-border: rgba(255, 255, 255, 0.1);
+      --text-main: #ffffff;
+      --text-muted: #a0a0a0;
+      --input-bg: rgba(0, 0, 0, 0.2);
+      --danger: #ff4757;
+    }
+    /* [ ... Estilos CSS anteriores ... ] */
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #0f0c29;
+      background-image: 
+        radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), 
+        radial-gradient(at 50% 0%, hsla(225,39%,30%,1) 0, transparent 50%), 
+        radial-gradient(at 100% 0%, hsla(339,49%,30%,1) 0, transparent 50%);
+      color: var(--text-main);
+      overflow: hidden;
+      position: relative;
+    }
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      z-index: -1;
+      opacity: 0.6;
+      animation: float 10s infinite ease-in-out alternate;
+    }
+    .orb-1 { width: 300px; height: 300px; background: #7000ff; top: 10%; left: 20%; }
+    .orb-2 { width: 400px; height: 400px; background: #00d2ff; bottom: 10%; right: 10%; animation-delay: -5s; }
+    @keyframes float {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(30px, 50px); }
+    }
+    .container {
+      position: relative;
+      width: 100%;
+      max-width: 420px;
+      padding: 20px;
+      perspective: 1000px;
+    }
+    .card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      padding: 40px 30px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+      animation: cardEntry 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+    }
+    h2 {
+      margin: 0;
+      font-size: 1.75rem;
+      font-weight: 700;
+      text-align: center;
+      background: linear-gradient(to right, #fff, #b3cdd1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.5px;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 15px;
+    }
+    label {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-left: 4px;
+    }
+    input, select {
+      width: 100%;
+      padding: 14px 16px;
+      background: var(--input-bg);
+      border: 1px solid transparent;
+      border-radius: 12px;
+      color: #fff;
+      font-size: 1rem;
+      font-family: inherit;
+      transition: all 0.3s ease;
+      outline: none;
+    }
+    select {
+      appearance: none;
+      background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23ffffff%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+      background-repeat: no-repeat;
+      background-position: right 15px top 50%;
+      background-size: 12px auto;
+      cursor: pointer;
+    }
+    select option {
+        background-color: #1e1e2e !important;
+        color: #ffffff !important;
+    }
+    input:focus, select:focus {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: var(--secondary);
+      box-shadow: 0 0 0 4px rgba(58, 123, 213, 0.15);
+    }
+    .actions {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-top: 10px;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--secondary), var(--primary));
+      color: white;
+      border: none;
+      padding: 16px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-primary:disabled {
+        background: #4a4a5a;
+        color: rgba(255, 255, 255, 0.3);
+        cursor: not-allowed;
+        box-shadow: none;
+        transform: none;
+    }
+    .btn-primary:not(:disabled)::before {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: 0.5s;
+    }
+    .btn-primary:not(:disabled):hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(0, 210, 255, 0.3);
+    }
+    .btn-primary:not(:disabled):hover::before {
+      left: 100%;
+    }
+    .btn-secondary {
+      text-align: center;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      padding: 10px;
+      border-radius: 8px;
+      transition: color 0.3s, background 0.3s;
+    }
+    .btn-secondary:hover {
+      color: var(--danger);
+      background: rgba(255, 71, 87, 0.1);
+    }
+    @keyframes cardEntry {
+      from { opacity: 0; transform: translateY(40px) scale(0.95); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+
+  <div class="container">
+    <div class="card">
+      <h2>Configurar Timer</h2>
+
+      <form method="POST" id="timerForm">
+        {% csrf_token %}
+        
+        <div class="form-group">
+          <label for="id_cantidad">Duración</label>
+          <div class="form-row">
+            {{ form.cantidad }} 
+            {{ form.unidad }}
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="id_categoria">Categoría</label>
+          {{ form.categoria }}
+        </div>
+
+        <div class="actions">
+          <button type="submit" class="btn-primary" id="btnSubmit" disabled>
+            Iniciar Temporizador
+          </button>
+          <a class="btn-secondary" href="{% url 'home' %}" id="btnCancelar">Cancelar y volver</a>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- Elementos del DOM ---
+        const inputCantidad = document.getElementById('id_cantidad');
+        const selectUnidad = document.getElementById('id_unidad'); 
+        const selectCategoria = document.getElementById('id_categoria');
+        const btnSubmit = document.getElementById('btnSubmit');
+        const form = document.getElementById('timerForm');
+        const btnCancelar = document.getElementById('btnCancelar');
+
+        // --- Estado de la Interacción ---
+        // Indica si el usuario ha modificado algún campo desde el estado inicial.
+        let datosModificados = false;
+
+        // --- Funciones de Validación y Estado ---
+
+        function validarFormulario() {
+            const cantidad = parseFloat(inputCantidad.value);
+            // La cantidad debe ser un número válido mayor que cero.
+            const isCantidadValid = !isNaN(cantidad) && cantidad > 0;
+
+            // La Unidad y Categoría deben tener un valor seleccionado (asumimos que la opción por defecto tiene value="").
+            const isUnidadValid = selectUnidad.value !== '';
+            const isCategoriaValid = selectCategoria.value !== '';
+            
+            const todoCompleto = isCantidadValid && isUnidadValid && isCategoriaValid;
+
+            btnSubmit.disabled = !todoCompleto;
+        }
+
+        // 1. Función para Marcar Datos Modificados
+        function marcarModificado(event) {
+            // Regla principal: Si el valor del campo no está vacío (o no es la opción por defecto),
+            // O si la cantidad es > 0, se considera modificado.
+
+            const campo = event.target;
+            
+            // Caso especial para selects: Asumimos que si el valor es "" es la opción por defecto.
+            if (campo.tagName === 'SELECT' && campo.value !== '') {
+                datosModificados = true;
+            } 
+            // Caso especial para cantidad: Si el valor numérico es > 0
+            else if (campo.id === 'id_cantidad' && parseFloat(campo.value) > 0) {
+                datosModificados = true;
+            } 
+            // Si el campo estaba modificado y el usuario lo vacía, lo resetamos (opcional, pero más preciso)
+            else if (campo.id === 'id_cantidad' && parseFloat(campo.value) <= 0) {
+                // Si el usuario borra la cantidad y las selects están por defecto, reseteamos el flag.
+                if (selectUnidad.value === '' && selectCategoria.value === '') {
+                     datosModificados = false;
+                }
+            } else if (campo.tagName === 'SELECT' && campo.value === '') {
+                 // Si la select vuelve al valor por defecto, lo reseteamos si los demás también lo están.
+                 if (parseFloat(inputCantidad.value) <= 0 && selectUnidad.value === '' && selectCategoria.value === '') {
+                     datosModificados = false;
+                 }
+            }
+            
+            // En resumen, si el formulario está en cualquier estado que no sea el inicial y vacío, el flag se activa.
+             if (parseFloat(inputCantidad.value) > 0 || selectUnidad.value !== '' || selectCategoria.value !== '') {
+                 datosModificados = true;
+             } else {
+                 datosModificados = false;
+             }
+        }
+        
+        // 2. Alerta al intentar salir de la página
+        window.addEventListener('beforeunload', function (e) {
+            // Solo mostramos la alerta si el flag está activo.
+            if (datosModificados) {
+                // Cancelamos el evento (esto dispara la alerta nativa del navegador)
+                e.preventDefault();
+                // Algunos navegadores requieren que se devuelva una cadena, aunque no se use en el diálogo.
+                return 'Tienes datos no guardados. ¿Estás seguro de que quieres salir?';
+            }
+        });
+        
+        // 3. Desactivar la alerta al enviar el formulario con éxito
+        form.addEventListener('submit', function() {
+            // Si el formulario se envía, asumimos que los datos están "guardados"
+            // y desactivamos la alerta.
+            datosModificados = false;
+        });
+        
+        // 4. Desactivar la alerta si se usa el botón 'Cancelar'
+        // Esto solo funciona si el botón de cancelar es un simple enlace <a>.
+        btnCancelar.addEventListener('click', function() {
+             // Si el formulario no está realmente vacío, preguntamos antes de navegar.
+             if (datosModificados) {
+                const confirmar = confirm('Tienes datos sin guardar. ¿Deseas realmente cancelar y perder los cambios?');
+                if (!confirmar) {
+                    event.preventDefault(); // Detiene la navegación
+                } else {
+                    datosModificados = false; // Permite la navegación sin alerta de beforeunload
+                }
+             }
+        });
+
+        // --- Listeners ---
+        inputCantidad.addEventListener('input', validarFormulario);
+        selectUnidad.addEventListener('change', validarFormulario);
+        selectCategoria.addEventListener('change', validarFormulario);
+        
+        // Añadimos el listener para marcar como modificado
+        inputCantidad.addEventListener('input', marcarModificado);
+        selectUnidad.addEventListener('change', marcarModificado);
+        selectCategoria.addEventListener('change', marcarModificado);
+
+        // --- Ejecución Inicial ---
+        validarFormulario();
+    });
+  </script>
+
+</body>
+</html>

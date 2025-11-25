@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Usuario</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00d2ff;
+            --secondary: #3a7bd5;
+            --text-main: #ffffff;
+            --text-muted: #a0a0a0;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --input-bg: rgba(0, 0, 0, 0.3);
+            --accent-link: #ff00cc; /* Color para links de acción */
+            --danger: #ff4757; /* Nuevo: Color para errores */
+            --success: #2ecc71; /* Nuevo: Color para éxito */
+        }
+
+        /* Reset y configuración de Box Model */
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #0f0c29;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(58, 123, 213, 0.4) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(112, 0, 255, 0.3) 0%, transparent 40%);
+            overflow: auto; 
+            color: var(--text-main);
+            padding: 20px 10px; 
+        }
+
+        /* Estrellas sutiles */
+        body::before {
+            content: "";
+            position: fixed; 
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            z-index: -1;
+        }
+
+        .register-card {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            animation: floatUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+            text-align: center;
+        }
+
+        h1 {
+            margin: 0 0 10px 0;
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff 30%, var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -1px;
+        }
+
+        p.subtitle {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            fill: var(--text-muted);
+            transition: fill 0.3s ease;
+            pointer-events: none;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px 15px 15px 45px;
+            background: var(--input-bg);
+            border: 1px solid transparent;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+            box-sizing: border-box; 
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Estado Focus: Brillo y cambio de color del icono */
+        input:focus {
+            background: rgba(0, 0, 0, 0.5);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(0, 210, 255, 0.15);
+        }
+
+        input:focus + .input-icon {
+            fill: var(--primary);
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(90deg, var(--secondary), var(--primary));
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 20px; 
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(58, 123, 213, 0.4);
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .footer-links {
+            margin-top: 25px;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        .footer-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+        
+        /* Estilos para mensajes de error/éxito (Nuevo) */
+        .messages {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+        .messages li {
+            padding: 12px 15px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            text-align: left;
+        }
+        /* Clase 'error' para messages.error(request, '...') */
+        .messages li.error { 
+            background: rgba(255, 71, 87, 0.2);
+            color: var(--danger);
+            border: 1px solid var(--danger);
+        }
+        /* Clase 'success' para messages.success(request, '...') */
+        .messages li.success { 
+            background: rgba(46, 204, 113, 0.2);
+            color: var(--success);
+            border: 1px solid var(--success);
+        }
+
+        @keyframes floatUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="register-card">
+        
+        <!-- BLOQUE DE MENSAJES DE DJANGO (IMPORTANTE para ver errores) -->
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li class="{{ message.tags }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        <h1>Crea tu Cuenta</h1>
+        <p class="subtitle">Únete a la comunidad de Broutherrr</p>
+
+        <!-- El action="" envía los datos a la vista que renderiza esta página (register_view) -->
+        <form action="" method="post">
+            {% csrf_token %}
+
+            <!-- Campo: Nombre Completo -->
+            <div class="input-group">
+                <input name="full_name" type="text" placeholder="Nombre Completo" required autocomplete="name">
+                <svg class="input-icon" viewBox="0 0 24 24">
+                    <!-- Icono de Usuario -->
+                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                </svg>
+            </div>
+
+            <!-- Campo: Correo Electrónico -->
+            <div class="input-group">
+                <input name="email" type="email" placeholder="Correo Electrónico" required autocomplete="email">
+                <svg class="input-icon" viewBox="0 0 24 24">
+                    <!-- Icono de Correo / Envelope -->
+                    <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                </svg>
+            </div>
+
+            <!-- Campo: Contraseña -->
+            <div class="input-group">
+                <input name="password" type="password" placeholder="Contraseña (Mín. 8 caracteres)" required autocomplete="new-password">
+                <svg class="input-icon" viewBox="0 0 24 24">
+                    <!-- Icono de Candado / Lock -->
+                    <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3 3.1-3 1.71 0 3.1 1.29 3.1 3v2z"/>
+                </svg>
+            </div>
+            
+            <!-- Campo: Confirmar Contraseña -->
+            <div class="input-group">
+                <input name="password_confirm" type="password" placeholder="Confirmar Contraseña" required autocomplete="new-password">
+                <svg class="input-icon" viewBox="0 0 24 24">
+                    <!-- Icono de Candado / Lock -->
+                    <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3 3.1-3 1.71 0 3.1 1.29 3.1 3v2z"/>
+                </svg>
+            </div>
+
+            <button type="submit">Crear Cuenta</button>
+        </form>
+
+        <div class="footer-links">
+            <a href="{% url 'login_home' %}">← Volver al Login</a>
+        </div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nueva Categoría</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00d2ff;
+            --secondary: #3a7bd5;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-main: #ffffff;
+            --text-muted: #a0a0a0;
+            --input-bg: rgba(0, 0, 0, 0.3);
+            --accent: #ff00cc;
+            --danger: #ff4757; /* Agregamos la variable de peligro para el hover del botón de volver */
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #0f0c29;
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(58, 123, 213, 0.25) 0%, transparent 25%), 
+                radial-gradient(circle at 85% 30%, rgba(255, 0, 204, 0.15) 0%, transparent 25%);
+            color: var(--text-main);
+            padding: 20px;
+        }
+
+        .main-container {
+            width: 100%;
+            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        /* --- TARJETA DEL FORMULARIO --- */
+        .card-form {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+            animation: slideUp 0.6s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Barra decorativa superior */
+        .card-form::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 4px;
+            background: linear-gradient(90deg, var(--secondary), var(--primary));
+        }
+
+        h1 {
+            margin: 0 0 25px 0;
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-align: center;
+            background: linear-gradient(to right, #fff, #a0eaff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* --- HACKING DJANGO {{ form.as_p }} --- */
+        form p {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        form label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        form input[type="text"], 
+        form input[type="number"],
+        form select,
+        form textarea {
+            width: 100%;
+            padding: 14px 16px;
+            background: var(--input-bg);
+            border: 1px solid transparent;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        form input:focus {
+            background: rgba(0, 0, 0, 0.5);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(0, 210, 255, 0.15);
+        }
+
+        /* Botón de envío */
+        .btn-submit {
+            width: 100%;
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        /* --- ESTILOS PARA BOTÓN DESACTIVADO --- */
+        .btn-submit:disabled {
+            background: #4a4a5a; /* Gris oscuro */
+            color: rgba(255, 255, 255, 0.3);
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        /* Sólo animar si no está disabled */
+        .btn-submit:not(:disabled):hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 210, 255, 0.3);
+        }
+
+        /* Botón volver */
+        .btn-back {
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+        
+        .btn-back:hover { 
+             color: var(--danger); /* Cambiado a var(--danger) para un feedback más fuerte */
+        }
+
+        /* --- SECCIÓN DE LISTA RECIENTE (Tags) --- */
+        .recent-section {
+            background: rgba(0,0,0,0.2);
+            border-radius: 20px;
+            padding: 20px;
+            border: 1px solid rgba(255,255,255,0.05);
+            animation: fadeIn 1s ease-out;
+        }
+
+        h2 {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin: 0 0 15px 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        h2::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(255,255,255,0.1);
+        }
+
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .tag-item {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            color: #e0e0e0;
+            border: 1px solid transparent;
+            transition: all 0.3s ease;
+            cursor: default;
+        }
+
+        .tag-item:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: var(--primary);
+            color: #fff;
+            transform: scale(1.05);
+        }
+
+        /* Animaciones */
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-container">
+        
+        <div class="card-form">
+            <h1>Nueva Categoría</h1>
+            
+            <form method="post" id="categoryForm">
+                {% csrf_token %}
+                {{ form.as_p }}
+                
+                <button type="submit" class="btn-submit" id="btnSubmitCategory" disabled>
+                    Guardar Categoría
+                </button>
+            </form>
+
+            <a href="{% url 'home' %}" class="btn-back" id="btnVolver">← Volver</a>
+        </div>
+
+        {% if ultimas_categorias %}
+        <div class="recent-section">
+            <h2>Agregadas Recientemente</h2>
+            <div class="tags-container">
+                {% for UC in ultimas_categorias %}
+                    <div class="tag-item">
+                        # {{ UC.categoria }}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- Elementos del DOM ---
+            const form = document.getElementById('categoryForm');
+            // Aseguramos que el selector de input[type="text"] funciona para el campo generado por Django.
+            const inputCategoria = form.querySelector('input[type="text"]'); 
+            const btnSubmit = document.getElementById('btnSubmitCategory');
+            const btnVolver = document.getElementById('btnVolver');
+
+            // --- Estado de la Interacción ---
+            // Indica si el usuario ha modificado el campo.
+            let datosModificados = false;
+
+            // --- Regla de Validación ---
+            const MIN_LENGTH = 3;
+
+            function validarFormulario() {
+                if (!inputCategoria) return; 
+
+                // Usamos .trim() para contar solo caracteres que no sean espacio en blanco.
+                const valor = inputCategoria.value.trim(); 
+
+                if (valor.length >= MIN_LENGTH) {
+                    btnSubmit.disabled = false;
+                } else {
+                    btnSubmit.disabled = true;
+                }
+            }
+            
+            // --- Funciones de Estado y Alerta ---
+
+            function marcarModificado() {
+                if (!inputCategoria) return;
+                
+                // Si el valor, después de limpiar espacios al inicio/final, tiene al menos 1 caracter,
+                // consideramos que hay datos modificados.
+                datosModificados = inputCategoria.value.trim().length > 0;
+            }
+
+            // Alerta al intentar salir de la página
+            window.addEventListener('beforeunload', function (e) {
+                if (datosModificados) {
+                    // Cancelamos el evento para que se muestre el diálogo nativo
+                    e.preventDefault();
+                    return 'Tienes datos no guardados. ¿Estás seguro de que quieres salir?';
+                }
+            });
+
+            // Desactivar la alerta al enviar el formulario con éxito
+            form.addEventListener('submit', function() {
+                // Si la validación pasó y se envió el formulario, asumimos que se guardará.
+                datosModificados = false;
+            });
+            
+            // Manejo del botón 'Volver' para mostrar confirmación personalizada
+            btnVolver.addEventListener('click', function(event) {
+                 if (datosModificados) {
+                    const confirmar = confirm('Tienes una categoría escrita sin guardar. ¿Deseas realmente volver y perder los cambios?');
+                    if (!confirmar) {
+                        event.preventDefault(); // Detiene la navegación
+                    } else {
+                        // Si confirma perder los cambios, desactivamos el flag para que 'beforeunload' no se active doblemente.
+                        datosModificados = false; 
+                    }
+                 }
+            });
+
+
+            // --- Listeners de Eventos ---
+            
+            // Validación de longitud y estado del botón
+            inputCategoria.addEventListener('input', validarFormulario);
+            
+            // Detección de modificación para la alerta
+            inputCategoria.addEventListener('input', marcarModificado);
+
+
+            // --- Ejecución Inicial ---
+            validarFormulario();
+            // Verificamos si hay autocompletado en la carga inicial
+            marcarModificado(); 
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block menu %}
+    <div class="menu">
+    <a href="{% url 'vista_agregar_tiempo' %}">Agregar Tiempo</a>
+    <a href="{% url 'agregar_categoria' %}">Agregar Categoria</a>
+    <a href="{% url 'muy_pronto' %}">Ver Historial</a>
+    <a href="{% url 'muy_pronto' %}">Estadisticas</a>
+    </div>
+
+
+{% endblock %}

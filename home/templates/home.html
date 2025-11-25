@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Centro de Comando</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00d2ff;
+            --secondary: #3a7bd5;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-hover: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-main: #ffffff;
+            --text-muted: #a0a0a0;
+            --danger: #ff4757;
+            --success: #2ecc71;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            background-color: #0f0c29;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(58, 123, 213, 0.2) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(112, 0, 255, 0.2) 0%, transparent 40%);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 20px 40px 20px; /* Padding extra abajo para scroll */
+        }
+
+        /* Header con saludo */
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            animation: slideDown 0.8s ease-out;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 0;
+            letter-spacing: -1px;
+        }
+
+        .username {
+            background: linear-gradient(90deg, var(--primary), #9b5de5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: relative;
+        }
+        
+        p.subtitle {
+            color: rgba(255,255,255,0.6);
+            margin-top: 10px;
+            font-size: 1rem;
+        }
+
+        /* Grid de Menú */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            width: 100%;
+            max-width: 600px;
+            margin-bottom: 40px;
+        }
+
+        /* Tarjetas de opción */
+        .card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 30px 20px;
+            text-align: center;
+            text-decoration: none;
+            color: var(--text-main);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            opacity: 0;
+            animation: popIn 0.6s forwards;
+        }
+
+        .card:nth-child(1) { animation-delay: 0.1s; }
+        .card:nth-child(2) { animation-delay: 0.2s; }
+        .card:nth-child(3) { animation-delay: 0.3s; }
+        .card:nth-child(4) { animation-delay: 0.4s; }
+
+        .card:hover {
+            transform: translateY(-5px) scale(1.02);
+            background: var(--glass-hover);
+            border-color: var(--primary);
+            box-shadow: 0 15px 30px rgba(0, 210, 255, 0.15);
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            fill: var(--text-main);
+            opacity: 0.8;
+            transition: fill 0.3s ease;
+        }
+
+        .card:hover .card-icon {
+            fill: var(--primary);
+            opacity: 1;
+        }
+
+        .card-title {
+            font-weight: 500;
+            font-size: 1.1rem;
+        }
+
+        /* --- SECCIÓN NUEVA: TEMPORIZADORES ACTIVOS --- */
+        .active-timers-section {
+            width: 100%;
+            max-width: 600px;
+            margin-bottom: 30px;
+            animation: fadeIn 1.2s ease;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 0 10px;
+        }
+
+        .section-title {
+            font-size: 1rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .count-badge {
+            background: rgba(255,255,255,0.1);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            color: var(--primary);
+            border: 1px solid rgba(0, 210, 255, 0.3);
+        }
+
+        /* Tarjeta Mini de Timer Activo */
+        .mini-timer-card {
+            background: rgba(15, 12, 41, 0.6); /* Fondo más oscuro para contraste */
+            border: 1px solid var(--glass-border);
+            border-left: 4px solid var(--success); /* Borde verde indicando activo */
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mini-timer-card:hover {
+            transform: translateX(5px);
+            background: rgba(255,255,255,0.08);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .mini-info h3 {
+            margin: 0 0 5px 0;
+            font-size: 1.1rem;
+            color: #fff;
+        }
+
+        .mini-info p {
+            margin: 0;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Indicador de "Corriendo" */
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            color: var(--success);
+            font-weight: 600;
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--success);
+            border-radius: 50%;
+            box-shadow: 0 0 0 rgba(46, 204, 113, 0.4);
+            animation: pulse 2s infinite;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            background: var(--glass-bg);
+            border-radius: 16px;
+            border: 1px dashed var(--glass-border);
+        }
+
+        /* --- BOTÓN LOGOUT --- */
+        .logout-container {
+            margin-top: 20px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+
+        .btn-logout {
+            background: transparent;
+            border: 1px solid rgba(255, 71, 87, 0.5);
+            color: rgba(255, 255, 255, 0.7);
+            padding: 10px 25px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-logout:hover {
+            background: rgba(255, 71, 87, 0.1);
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        /* Keyframes */
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes popIn {
+            from { opacity: 0; transform: scale(0.9); translateY(20px); }
+            to { opacity: 1; transform: scale(1); translateY(0); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(46, 204, 113, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(46, 204, 113, 0); }
+        }
+        
+        @media (max-width: 480px) {
+            .dashboard-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Hola, <span class="username">{{ request.user.username }}</span></h1>
+        <p class="subtitle">Centro de Comando</p>
+    </header>
+
+    <div class="dashboard-grid">
+        <a href="{% url 'vista_agregar_tiempo' %}" class="card">
+            <svg class="card-icon" viewBox="0 0 24 24">
+                <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8 8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
+            </svg>
+            <span class="card-title">Nuevo Timer</span>
+        </a>
+
+        <a href="{% url 'agregar_categoria' %}" class="card">
+            <svg class="card-icon" viewBox="0 0 24 24">
+                <path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2zm0 15l-5-2.18L7 18V5h10v13z"/>
+            </svg>
+            <span class="card-title">Crear Categoría</span>
+        </a>
+
+        <a href="{% url 'muy_pronto' %}" class="card">
+            <svg class="card-icon" viewBox="0 0 24 24">
+                <path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/>
+            </svg>
+            <span class="card-title">Historial</span>
+        </a>
+
+        <a href="{% url 'muy_pronto' %}" class="card">
+            <svg class="card-icon" viewBox="0 0 24 24">
+                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+            </svg>
+            <span class="card-title">Estadísticas</span>
+        </a>
+    </div>
+
+    <!-- SECCIÓN DE TEMPORIZADORES ACTIVOS -->
+    <div class="active-timers-section">
+        <div class="section-header">
+            <!-- Título dinámico con el contador -->
+            <span class="section-title">En ejecución</span>
+            <!-- La lógica en la vista limita a 2, pero si tienes más, aquí muestra cuántos hay visibles -->
+            <span class="count-badge">{{ timers_activos|length }}/2</span> 
+        </div>
+
+        {% if timers_activos %}
+            {% for timer in timers_activos %}
+            <!-- Asegúrate de tener una URL llamada 'ver_timer' o similar que use el ID -->
+            <!-- Si no tienes una vista para ver un timer específico, puedes poner href="#" -->
+            <a href="{% url 'contador_tiempo' timer.id %}" class="mini-timer-card">
+                <div class="mini-info">
+                    <h3>{{ timer.categoria }}</h3>
+                    <p>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8 8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+                        Duración: {{ timer.duracion }}
+                    </p>
+                </div>
+                <div class="status-indicator">
+                    <div class="pulse-dot"></div>
+                    Activo
+                </div>
+            </a>
+            {% endfor %}
+        {% else %}
+            <!-- Estado vacío: Se muestra si no hay timers corriendo -->
+            <div class="empty-state">
+                No hay misiones activas en este momento (0/2)
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="logout-container">
+        <form method="post" action="{% url 'cerrar_sesion' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn-logout">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M10.09 15.59L11.5 17l5-5-5-5-1.41 1.41L12.67 11H3v2h9.67l-2.58 2.59zM19 3H5c-1.11 0-2 .9-2 2v4h2V5h14v14H5v-4H3v4c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/>
+                </svg>
+                Cerrar Sesión
+            </button>
+        </form>
+    </div>
+
+</body>
+</html>
